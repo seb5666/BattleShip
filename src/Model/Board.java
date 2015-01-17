@@ -1,48 +1,56 @@
 package Model;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.TreeMap;
 
 import Exceptions.PositionAlreadyHitException;
-import Exceptions.PositionOutOfBoatException;
+import Exceptions.PositionOutOfBoardException;
 import Exceptions.SquareNotEmptyException;
 
 public class Board {
 	
 	private int mSize;
-	private TreeMap<Position, Boat> mBoard; //Map of Boats
+	private TreeMap<Position, Boat> mBoardMap; //Map of Boats
 	private ArrayList<Position> mHitPositions;
 	private int mBoatsAlive;
 
 	public Board(int size){
 		mSize = size;
 		mHitPositions = new ArrayList<Position>();
-		mBoard = new TreeMap<Position, Boat>();
+		mBoardMap = new TreeMap<Position, Boat>();
 		mBoatsAlive = 0;
 	}
 	
 	public void addBoat(Boat b) throws SquareNotEmptyException{
 		ArrayList<Position> positions = b.getBoatPositions();
 		for(Position p : positions){
-			if(mBoard.containsKey(p)){
+			if(mBoardMap.containsKey(p)){
 				//Boat already on square
 				throw new SquareNotEmptyException();
 			}
-			mBoard.put(p, b);
+			mBoardMap.put(p, b);
 		}
 		mBoatsAlive++;
 	}
 	
-	public String fire(Position pos) throws PositionAlreadyHitException, PositionOutOfBoatException{
+	public Boat fire(Position pos) throws PositionAlreadyHitException, PositionOutOfBoardException{
+		if(pos.getX() < 0 || pos.getX() >= mSize || pos.getY() < 0 || pos.getY() >= mSize){
+			throw new PositionOutOfBoardException();
+		}
 		if(mHitPositions.contains(pos)){
 			throw new PositionAlreadyHitException();
 		}
+		
 		mHitPositions.add(pos);
-		if(mBoard.containsKey(pos)){
-			Boat b = mBoard.get(pos);
+		if(mBoardMap.containsKey(pos)){
+			Boat b = mBoardMap.get(pos);
 			b.hit(pos);
-			return b.getName();
+			if(b.isSunk()){
+				mBoatsAlive--;
+			}
+			return b;
 		} else {
-			return "water";
+			return null;
 		}
 	}
 	
@@ -58,10 +66,35 @@ public class Board {
 		return this.mSize;
 	}
 	
-	public ArrayList<Position> getBoatPositions(){
-		return new ArrayList<Position>(mBoard.keySet());
+	public Boat boatAt(Position p){
+		if(mBoardMap.containsKey(p)){
+			return mBoardMap.get(p);
+		}
+		return null;
 	}
 	
+	public ArrayList<Position> getBoatPositions(){
+		return new ArrayList<Position>(mBoardMap.keySet());
+	}
+	
+	public boolean isPositionHit(Position p){
+		return mHitPositions.contains(p);
+	}
+	
+	public HashMap<Position, Boat> getBoatHitPositions(){
+		HashMap<Position, Boat> hitBoatPositions = new HashMap<Position, Boat>();
+		for(Position p : mBoardMap.keySet()){
+			if(mHitPositions.contains(p)){
+				hitBoatPositions.put(p, boatAt(p));
+			}
+		}
+		return hitBoatPositions;
+	}
+	
+	public ArrayList<Position> getHitPositions(){
+		return mHitPositions;
+	}
+
 	@Override
 	public String toString(){
 		String s="Y\\X \t";
@@ -73,7 +106,7 @@ public class Board {
 		for(int y=0; y < mSize; y++){
 			s += y + "\t";
 			for(int x=0; x < mSize; x++){
-				if(mBoard.containsKey(new Position(x,y))){
+				if(mBoardMap.containsKey(new Position(x,y))){
 					s += "b\t";
 				} else {
 					s += "~\t";

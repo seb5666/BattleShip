@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import javax.management.MXBean;
 
-import Exceptions.PositionOutOfBoatException;
 
 public abstract class Boat {
 	
@@ -25,12 +24,10 @@ public abstract class Boat {
 		mUnHitPositions = new ArrayList<Position>();
 	}
 	
-	public void hit(Position pos) throws PositionOutOfBoatException{
+	public void hit(Position pos){
 		if(mUnHitPositions.contains(pos)){
 			mUnHitPositions.remove(pos);
-		} else {
-			throw new PositionOutOfBoatException();
-		}
+		} 
 	}
 	
 	public boolean isSunk(){

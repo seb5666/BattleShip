@@ -6,7 +6,7 @@ public class SubmarineBoat extends Boat {
 	
 	public SubmarineBoat(Position startPos, boolean horizontal){
 		super(startPos, horizontal, SUBMARINE_LENGTH);
-		this.mName = "Carrier";
+		this.mName = "Submarine";
 		super.initialseBoat();
 	}
 }

@@ -30,6 +30,11 @@ public class Position implements Comparable<Position>, Cloneable{
 		return (this.mX == ((Position) p).mX && this.mY == ((Position) p).mY) ;
 	}
 	
+	@Override
+	public int hashCode() {
+		return 10000 * mX + mY;
+	};
+	
 	//might be useful later
 	@Override
 	public Position clone() throws CloneNotSupportedException{

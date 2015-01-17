@@ -6,7 +6,7 @@ public class DestroyerBoat extends Boat {
 	
 	public DestroyerBoat(Position startPos, boolean horizontal){
 		super(startPos, horizontal, DESTROYER_LENGTH);
-		this.mName = "Carrier";
+		this.mName = "Destroyer";
 		super.initialseBoat();
 	}
 }
